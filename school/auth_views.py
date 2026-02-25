@@ -1,28 +1,24 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.contrib.auth.forms import AuthenticationForm
-from .forms_auth import CustomUserCreationForm
+from .forms_auth import CustomUserCreationForm, EmailOrUsernameAuthenticationForm
 
 def login_view(request):
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = EmailOrUsernameAuthenticationForm(request, data=request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            
-            if user is not None:
-                login(request, user)
-                messages.success(request, f'Bienvenue {user.username}!')
-                return redirect('dashboard')
-            else:
-                messages.error(request, 'Email ou mot de passe incorrect.')
+            login(request, form.get_user())
+            messages.success(request, f"Bienvenue {form.get_user().username}!")
+
+            next_url = request.POST.get('next') or request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
+            return redirect('dashboard')
     else:
-        form = AuthenticationForm()
-    
-    return render(request, 'school/login.html', {'form': form})
+        form = EmailOrUsernameAuthenticationForm()
+     
+    return render(request, 'school/login.html', {'form': form, 'next': request.GET.get('next', '')})
 
 @login_required
 def logout_view(request):
