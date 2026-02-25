@@ -1,0 +1,298 @@
+{% extends 'school/base.html' %}
+
+{% block title %}Tableau de Bord - Gestion Scolaire{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-tachometer-alt me-2"></i>
+        Tableau de Bord
+    </h2>
+    <div class="d-flex gap-2">
+        <button class="btn btn-primary" onclick="refreshStats()">
+            <i class="fas fa-sync-alt me-1"></i>
+            Actualiser
+        </button>
+        <a href="{% url 'export_students_excel' %}" class="btn btn-success">
+            <i class="fas fa-file-excel me-1"></i>
+            Exporter Excel
+        </a>
+        <a href="{% url 'export_students_pdf' %}" class="btn btn-danger">
+            <i class="fas fa-file-pdf me-1"></i>
+            Exporter PDF
+        </a>
+    </div>
+</div>
+
+<!-- Statistiques principales -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3>{{ total_students }}</h3>
+                    <p>Total Étudiants</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-users fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card stats-card-success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3>{{ total_teachers }}</h3>
+                    <p>Total Enseignants</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-chalkboard-teacher fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card stats-card-info">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3>{{ total_courses }}</h3>
+                    <p>Total Cours</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-book fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="stats-card stats-card-warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3>{{ total_grades }}</h3>
+                    <p>Total Notes</p>
+                </div>
+                <div class="stats-icon">
+                    <i class="fas fa-chart-line fa-2x"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistiques détaillées -->
+<div class="row mb-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-bar me-2"></i>
+                    Répartition par Classe
+                </h5>
+            </div>
+            <div class="card-body">
+                {% for class_stat in students_by_class %}
+                <div class="class-stat-item mb-3 p-3 rounded">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-semibold">{{ class_stat.class_name }}</span>
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-primary me-2">{{ class_stat.count }} étudiants</span>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar" data-progress="{% widthratio class_stat.count total_students 100 %}"></div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                <p class="text-muted text-center">Aucune classe trouvée</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-check me-2"></i>
+                    Statuts
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Actifs</span>
+                        <span class="badge bg-success">{{ active_students }}</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-success" style="width: {% widthratio active_students total_students 100 %}%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Inactifs</span>
+                        <span class="badge bg-secondary">{{ inactive_students }}</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-secondary" style="width: {% widthratio inactive_students total_students 100 %}%"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Diplômés</span>
+                        <span class="badge bg-info">{{ graduated_students }}</span>
+                    </div>
+                    <div class="progress" style="height: 6px;">
+                        <div class="progress-bar bg-info" style="width: {% widthratio graduated_students total_students 100 %}%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activités récentes et Top Performers -->
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-trophy me-2"></i>
+                    Meilleurs Étudiants
+                </h5>
+            </div>
+            <div class="card-body">
+                {% for student in top_students %}
+                <div class="d-flex justify-content-between align-items-center mb-3 p-2 rounded" style="background-color: var(--bg-secondary);">
+                    <div>
+                        <div class="fw-semibold">{{ student.student__first_name }} {{ student.student__last_name }}</div>
+                        <small class="text-muted">Moyenne: {{ student.avg_grade|floatformat:2 }}/20</small>
+                    </div>
+                    <div class="text-warning">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                </div>
+                {% empty %}
+                <p class="text-muted text-center">Aucune note enregistrée</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Activités Récentes
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="timeline">
+                    {% for grade in recent_grades_list %}
+                    <div class="timeline-item mb-3">
+                        <div class="timeline-marker bg-primary"></div>
+                        <div class="timeline-content">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <strong>{{ grade.student.full_name }}</strong>
+                                    <div class="small text-muted">{{ grade.course.name }}</div>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">{{ grade.grade_value }}/20</span>
+                                    <div class="small text-muted">{{ grade.exam_date|date:"d/m/Y" }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted text-center">Aucune activité récente</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Présence du jour -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calendar-check me-2"></i>
+                    Présence du Jour - {{ "now"|date:"d/m/Y" }}
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-md-4">
+                        <div class="stats-card" style="background: linear-gradient(135deg, #22c55e, #16a34a);">
+                            <h4>{{ present_today }}</h4>
+                            <p>Présents</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-card" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
+                            <h4>{{ absent_today }}</h4>
+                            <p>Absents</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stats-card" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                            <h4>{{ attendance_today }}</h4>
+                            <p>Total</p>
+                        </div>
+                    </div>
+                </div>
+                {% if attendance_today > 0 %}
+                <div class="mt-3">
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" style="width: {% widthratio present_today attendance_today 100 %}%"></div>
+                    </div>
+                    <small class="text-muted">Taux de présence: {% widthratio present_today attendance_today 100 %}%</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.stats-icon {
+    opacity: 0.3;
+    font-size: 3rem;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -35px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.timeline-content {
+    background-color: var(--bg-secondary);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-left: 10px;
+}
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+</style>
+{% endblock %}

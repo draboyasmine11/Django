@@ -1,0 +1,98 @@
+{% extends 'school/base.html' %}
+
+{% block title %}Mon Profil - Gestion Scolaire{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>
+        <i class="fas fa-user-circle me-2"></i>
+        Mon Profil
+    </h2>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user me-2"></i>
+                    Informations Personnelles
+                </h5>
+            </div>
+            <div class="card-body text-center">
+                {% if user.student.photo %}
+                    <img src="{{ user.student.photo.url }}" class="rounded-circle mb-3" width="150" height="150" alt="Photo de profil">
+                {% else %}
+                    <div class="rounded-circle mb-3 d-flex align-items-center justify-content-center" style="width: 150px; height: 150px; background: linear-gradient(135deg, var(--primary-color), #6366f1);">
+                        <i class="fas fa-user fa-3x text-white"></i>
+                    </div>
+                {% endif %}
+                <h4>{{ user.get_full_name|default:user.username }}</h4>
+                <p class="text-muted">{{ user.email }}</p>
+                <span class="badge bg-primary">Membre depuis {{ user.date_joined|date:"d/m/Y" }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Détails du Compte
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Nom d'utilisateur</label>
+                            <input type="text" class="form-control" value="{{ user.username }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Prénom</label>
+                            <input type="text" class="form-control" value="{{ user.first_name }}" readonly>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Nom</label>
+                            <input type="text" class="form-control" value="{{ user.last_name }}" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Date d'inscription</label>
+                    <input type="text" class="form-control" value="{{ user.date_joined|date:'d/m/Y H:i' }}" readonly>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Dernière connexion</label>
+                    <input type="text" class="form-control" value="{{ user.last_login|date:'d/m/Y H:i'|default:'Jamais' }}" readonly>
+                </div>
+                
+                <hr class="my-4">
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'dashboard' %}" class="btn btn-primary">
+                        <i class="fas fa-tachometer-alt me-2"></i>
+                        Tableau de Bord
+                    </a>
+                    <a href="{% url 'password_change' %}" class="btn btn-secondary">
+                        <i class="fas fa-key me-2"></i>
+                        Changer le mot de passe
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
