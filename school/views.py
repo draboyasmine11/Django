@@ -5,7 +5,9 @@ from .models import Student, Teacher
 from .forms import StudentForm, TeacherForm
 
 def home(request):
-    return render(request, 'school/home.html')
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+    return redirect('login')
 
 @login_required
 def student_list(request):
