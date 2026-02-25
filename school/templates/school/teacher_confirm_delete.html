@@ -1,0 +1,33 @@
+{% extends 'school/base.html' %}
+
+{% block title %}Supprimer un Enseignant - Gestion Scolaire{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h3>Confirmer la suppression</h3>
+            </div>
+            <div class="card-body">
+                <p>Êtes-vous sûr de vouloir supprimer l'enseignant suivant ?</p>
+                <div class="alert alert-warning">
+                    <strong>Nom :</strong> {{ teacher.last_name }}<br>
+                    <strong>Prénom :</strong> {{ teacher.first_name }}<br>
+                    <strong>Email :</strong> {{ teacher.email }}<br>
+                    <strong>Matière :</strong> {{ teacher.subject }}
+                </div>
+                <p class="text-danger">Cette action est irréversible.</p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'teacher_list' %}" class="btn btn-secondary">Annuler</a>
+                        <button type="submit" class="btn btn-danger">Supprimer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'school/base.html' %}
+
+{% block title %}Accueil - Gestion Scolaire{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+            <h1 class="display-4">Bienvenue dans le système de gestion scolaire</h1>
+            <p class="lead">Gérez facilement les étudiants et les enseignants de votre établissement.</p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Gestion des Étudiants</h5>
+                <p class="card-text">Ajoutez, modifiez et supprimez des étudiants. Consultez la liste complète des étudiants inscrits.</p>
+                <a href="{% url 'student_list' %}" class="btn btn-primary">Voir les étudiants</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Gestion des Enseignants</h5>
+                <p class="card-text">Ajoutez, modifiez et supprimez des enseignants. Consultez la liste complète du personnel enseignant.</p>
+                <a href="{% url 'teacher_list' %}" class="btn btn-primary">Voir les enseignants</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

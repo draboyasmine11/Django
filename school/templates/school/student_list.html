@@ -1,0 +1,55 @@
+{% extends 'school/base.html' %}
+
+{% block title %}Liste des Étudiants - Gestion Scolaire{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Liste des Étudiants</h2>
+    <a href="{% url 'student_create' %}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Ajouter un étudiant
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if students %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Email</th>
+                            <th>Date de naissance</th>
+                            <th>Classe</th>
+                            <th>Date d'inscription</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.last_name }}</td>
+                            <td>{{ student.first_name }}</td>
+                            <td>{{ student.email }}</td>
+                            <td>{{ student.date_of_birth }}</td>
+                            <td>{{ student.grade }}</td>
+                            <td>{{ student.enrollment_date|date:"d/m/Y" }}</td>
+                            <td>
+                                <a href="{% url 'student_update' student.pk %}" class="btn btn-sm btn-outline-primary">Modifier</a>
+                                <a href="{% url 'student_delete' student.pk %}" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <p class="text-muted">Aucun étudiant n'est encore inscrit.</p>
+                <a href="{% url 'student_create' %}" class="btn btn-primary">Ajouter le premier étudiant</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
