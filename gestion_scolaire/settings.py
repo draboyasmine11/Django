@@ -154,11 +154,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 
-# Auth
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
-
 
 # Dossier où collectstatic copiera tous les fichiers statiques
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

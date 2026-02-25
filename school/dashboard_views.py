@@ -1,11 +1,9 @@
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Avg, Sum, Q
 from django.utils import timezone
 from datetime import timedelta
 from .models import Student, Teacher, Course, Grade, Attendance
 
-@login_required
 def dashboard(request):
     # Statistiques générales
     total_students = Student.objects.count()
@@ -93,7 +91,6 @@ def dashboard(request):
     
     return render(request, 'school/dashboard.html', context)
 
-@login_required
 def statistics_detailed(request):
     # Statistiques détaillées avec graphiques
     from django.db.models import F, ExpressionWrapper, FloatField

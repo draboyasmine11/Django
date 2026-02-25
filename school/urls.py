@@ -1,20 +1,13 @@
 from django.urls import path
 from . import views
-from . import auth_views
 from . import dashboard_views
 from . import views_advanced
-from django.contrib.auth.decorators import login_required
 
 from django.urls import include
 from django.contrib import admin
 
 urlpatterns = [
-    # Authentification
     path('', views.home, name='home'),
-    path('login/', auth_views.login_view, name='login'),
-    path('logout/', auth_views.logout_view, name='logout'),
-    path('register/', auth_views.register_view, name='register'),
-    path('profile/', auth_views.profile_view, name='profile'),
     
     # Dashboard
     path('dashboard/', dashboard_views.dashboard, name='dashboard'),

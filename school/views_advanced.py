@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from .models import Student, Teacher, Course, Grade, Attendance
@@ -11,7 +10,6 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 import io
 
-@login_required
 def student_list_advanced(request):
     students = Student.objects.all()
     student_filter = StudentFilter(request.GET, queryset=students)
@@ -27,7 +25,6 @@ def student_list_advanced(request):
     }
     return render(request, 'school/student_list_advanced.html', context)
 
-@login_required
 def teacher_list_advanced(request):
     teachers = Teacher.objects.all()
     teacher_filter = TeacherFilter(request.GET, queryset=teachers)
@@ -43,7 +40,6 @@ def teacher_list_advanced(request):
     }
     return render(request, 'school/teacher_list_advanced.html', context)
 
-@login_required
 def course_list(request):
     courses = Course.objects.all()
     course_filter = CourseFilter(request.GET, queryset=courses)
@@ -59,7 +55,6 @@ def course_list(request):
     }
     return render(request, 'school/course_list.html', context)
 
-@login_required
 def grade_list(request):
     grades = Grade.objects.all()
     grade_filter = GradeFilter(request.GET, queryset=grades)
@@ -75,7 +70,6 @@ def grade_list(request):
     }
     return render(request, 'school/grade_list.html', context)
 
-@login_required
 def attendance_list(request):
     attendances = Attendance.objects.all()
     attendance_filter = AttendanceFilter(request.GET, queryset=attendances)
@@ -92,19 +86,17 @@ def attendance_list(request):
     return render(request, 'school/attendance_list.html', context)
 
 # Vues pour les formulaires CRUD
-@login_required
 def course_create(request):
     if request.method == 'POST':
         form = CourseForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Cours créé avec succès!')
+            messages.success(request, 'Cours ajouté avec succès!')
             return redirect('course_list')
     else:
         form = CourseForm()
     return render(request, 'school/course_form.html', {'form': form, 'title': 'Ajouter un cours'})
 
-@login_required
 def course_update(request, pk):
     course = get_object_or_404(Course, pk=pk)
     if request.method == 'POST':
@@ -117,7 +109,6 @@ def course_update(request, pk):
         form = CourseForm(instance=course)
     return render(request, 'school/course_form.html', {'form': form, 'title': 'Modifier un cours'})
 
-@login_required
 def course_delete(request, pk):
     course = get_object_or_404(Course, pk=pk)
     if request.method == 'POST':
@@ -126,7 +117,6 @@ def course_delete(request, pk):
         return redirect('course_list')
     return render(request, 'school/course_confirm_delete.html', {'course': course})
 
-@login_required
 def grade_create(request):
     if request.method == 'POST':
         form = GradeForm(request.POST)
@@ -138,7 +128,6 @@ def grade_create(request):
         form = GradeForm()
     return render(request, 'school/grade_form.html', {'form': form, 'title': 'Ajouter une note'})
 
-@login_required
 def attendance_create(request):
     if request.method == 'POST':
         form = AttendanceForm(request.POST)
@@ -151,13 +140,11 @@ def attendance_create(request):
     return render(request, 'school/attendance_form.html', {'form': form, 'title': 'Enregistrer la présence'})
 
 # Fonctions d'export
-@login_required
 def export_students_excel(request):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        headers={'Content-Disposition': 'attachment; filename=students.xlsx'},
     )
-    response['Content-Disposition'] = 'attachment; filename=students.xlsx'
-    
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
     worksheet.title = 'Étudiants'
@@ -183,7 +170,6 @@ def export_students_excel(request):
     workbook.save(response)
     return response
 
-@login_required
 def export_students_pdf(request):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=students.pdf'
