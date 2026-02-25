@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -81,9 +82,14 @@ WSGI_APPLICATION = "gestion_scolaire.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "NAME": "django",
+        'USER': 'django_user',            
+        'PASSWORD': 'django', 
+        'HOST': 'localhost',            
+        'PORT': '3306',                 
     }
 }
+
 
 
 # Password validation
@@ -156,3 +162,10 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/login/'
+
+
+# Dossier où collectstatic copiera tous les fichiers statiques
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# URL publique pour servir les fichiers statiques
+STATIC_URL = '/static/'
